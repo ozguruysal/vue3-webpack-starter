@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const WebpackBar = require("webpackbar");
 
 const publicPath = resolve(__dirname, "./public");
@@ -21,8 +21,8 @@ const config = {
 
   output: {
     path: outputPath,
-    filename: "js/[name].[hash].js",
-    chunkFilename: "js/[name].[hash].js",
+    filename: "js/[name].[contenthash].js",
+    chunkFilename: "js/[name].[contenthash].js",
   },
 
   resolve: {
@@ -35,6 +35,7 @@ const config = {
   devtool: isProd ? false : "eval-cheap-source-map",
 
   optimization: {
+    minimizer: [`...`, new CssMinimizerPlugin()],
     splitChunks: {
       chunks: "all",
     },
@@ -102,12 +103,14 @@ const config = {
 
   devServer: {
     port: 8080,
-    inline: true,
-    hot: true,
-    logLevel: "silent",
-    contentBase: resolve(__dirname, "dist"),
+    historyApiFallback: true,
     overlay: true,
+    static: {
+      directory: resolve(__dirname, "dist"),
+    },
   },
+
+  stats: isProd ? "normal" : "errors-warnings",
 };
 
 function buildCssConfig() {
@@ -119,16 +122,7 @@ function buildCssConfig() {
 
     config.plugins.push(
       new MiniCssExtractPlugin({
-        filename: "css/[name].[hash].css",
-      }),
-
-      new OptimizeCssAssetsPlugin({
-        assetNameRegExp: /\.css$/g,
-        cssProcessor: require("cssnano"),
-        cssProcessorOptions: {
-          preset: ["default"],
-        },
-        canPrint: true,
+        filename: "css/[name].[contenthash].css",
       }),
     );
   } else {

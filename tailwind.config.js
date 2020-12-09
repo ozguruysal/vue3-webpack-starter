@@ -1,8 +1,5 @@
 module.exports = {
-  future: {
-    removeDeprecatedGapUtilities: true,
-  },
-  purge: false,
+  purge: ['./src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {},
   },
