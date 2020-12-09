@@ -6,6 +6,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
 const WebpackBar = require("webpackbar");
 
 const publicPath = resolve(__dirname, "./public");
@@ -44,14 +45,6 @@ const config = {
   module: {
     rules: [
       {
-        enforce: "pre",
-        test: /\.(ts|vue)$/,
-        loader: "eslint-loader",
-        options: {
-          failOnError: true,
-        },
-      },
-      {
         test: /\.vue$/,
         use: "vue-loader",
       },
@@ -73,6 +66,11 @@ const config = {
       ),
       __VUE_OPTIONS_API__: true,
       __VUE_PROD_DEVTOOLS__: false,
+    }),
+
+    new ESLintPlugin({
+      extensions: ["ts", "vue"],
+      failOnError: true,
     }),
 
     new VueLoaderPlugin(),
